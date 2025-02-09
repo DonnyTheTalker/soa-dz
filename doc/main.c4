@@ -1,0 +1,116 @@
+specification {
+    element person
+    element container
+    element component
+    element system
+}
+
+model {
+    user = person "Пользователь"
+
+    social_network = system "Социальная сеть" {
+        api = container "API" {
+            description "Перенаправляет запросы в другие сервисы и предоставляет REST API для UI"
+            technology "Node.js, Express"
+        }
+
+        web_app = container "Web-приложение" {
+            description "Интерфейс пользователя"
+            technology "React, JavaScript"
+        }
+
+        user_service = container "Сервис пользователя" {
+            description "Управление пользователем и аутентификация"
+
+            component user_controller "user_controller" "Обработка запросов"
+            component auth_service "auth_service" "Аутентификация пользователя"
+            component user_repository "user_repository" "Доступ к данным пользователя"
+            component user_service "user_service" "Управление пользователем"
+            component kafka_producer "kafka_producer" "Отправление событий пользователя"
+        }
+
+        content_service = container "Сервис постов и комментариев" {
+            description "Управление постами и комментариями"
+
+            component content_controller "content_controller" "Обработка запросов"
+            component content_repository "content_repository" "Доступ к постам и комментариям"
+            component content_service "content_service" "Управление постами и комментариями"
+            component kafka_producer "kafka_producer" "Отправление событий постов и комментариев"
+        }
+
+        statistics_service = container "Сервис статистики" {
+            description "Управление статистикой"
+
+            component statistics_controller "statistics_controller" "Обработка запросов"
+            component statistics_repository "statistics_repository" "Доступ к статистике"
+            component statistics_service "statistics_service" "Управление статистикой"
+        }
+
+        cassandraDB = container "CassandraDB" {
+            description "Хранилище контента"
+            technology "Database"
+            style {
+                shape cylinder
+            }
+        }
+
+        clickhouseDB = container "ClickhouseDB" {
+            description "Хранилище данных статистики"
+            technology "Database"
+            style {
+                shape cylinder
+            }
+        }
+
+        postgresDB = container "PostgresDB" {
+            description "Хранилище данных пользователя"
+            technology "Database"
+            style {
+                shape cylinder
+            }
+        }
+
+        kafka = container "Kafka" {
+            description "Обмен событиями между сервисами"
+            technology "Message Broker"
+            style {
+                shape queue
+            }
+        }
+    }
+
+    user -> social_network.web_app "Использует" "HTTPS"
+
+    social_network.web_app -> social_network.api "Использует" "REST API"
+    social_network.api -> social_network.user_service "Использует" "JSON/HTTPS"
+    social_network.api -> social_network.content_service "Использует" "JSON/HTTPS"
+    social_network.api -> social_network.statistics_service "Использует" "JSON/HTTPS"
+
+    social_network.user_service -> social_network.postgresDB "Читает/Пишет" "SQL"
+    social_network.content_service -> social_network.cassandraDB "Читает/Пишет" "CQL"
+    social_network.statistics_service -> social_network.clickhouseDB "Читает/Пишет" "clickhouse"
+
+    social_network.user_service -> social_network.kafka "Публикует/Подписывается" "user_events"
+    social_network.content_service -> social_network.kafka "Публикует/Подписывается" "content_events"
+    social_network.statistics_service -> social_network.kafka "Подписывается" "user_events, content_events"
+
+    social_network.user_service.user_controller -> social_network.user_service.auth_service "Использует"
+    social_network.user_service.user_controller -> social_network.user_service.user_service "Использует"
+    social_network.user_service.auth_service -> social_network.user_service.user_service "Использует"
+    social_network.user_service.user_service -> social_network.user_service.user_repository "Использует"
+    social_network.user_service.user_service -> social_network.user_service.kafka_producer "Использует"
+
+    social_network.content_service.content_controller -> social_network.content_service.content_service "Использует"
+    social_network.content_service.content_service -> social_network.content_service.content_repository "Использует"
+    social_network.content_service.content_service -> social_network.content_service.kafka_producer "Использует"
+
+    social_network.content_service -> social_network.user_service "Взаимодействует" "gRPC"
+    social_network.content_service -> social_network.statistics_service "Взаимодействует" "gRPC"
+    
+}
+
+views {
+    view index {
+        include *
+    }
+}
