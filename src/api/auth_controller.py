@@ -37,9 +37,12 @@ class AuthController:
     def update_profile():
         data = request.get_json()
 
-        required_fields = ['username']
+        required_fields = ['username', 'password']
         if not AuthController.check_required_fields(data, required_fields):
             return jsonify(success=False, message="Missing fields"), 400
+        
+        if not AuthController.authenticate(data['username'], data['password']):
+            return jsonify(success=False, message="Invalid credentials"), 401
         
         valid, message = AuthController.validate_registration_data(data)
         if not valid:
