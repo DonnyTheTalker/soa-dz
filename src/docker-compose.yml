@@ -32,3 +32,11 @@ services:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
+
+  tests:
+    build: ./tests
+    depends_on:
+      - api
+      - user
+      - db
+    command: ["pytest"]
