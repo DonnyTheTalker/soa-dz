@@ -1,11 +1,15 @@
 import pytest
 import requests
 
-API_URL = "http://localhost:5000"
+API_URL = "http://api:5000"
 
 def test_register_user():
-    assert True
-    pass
+    import time
+    time.sleep(5)
+    response = requests.get(f"{API_URL}/get", json={
+        "username": "sasha"
+    })
+    assert response.status_code == 200
     # response = requests.post(f"{API_URL}/register", json={
     #     'username': 'testuser',
     #     'password': 'testpass',
