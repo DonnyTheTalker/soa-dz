@@ -42,7 +42,7 @@ class AuthController:
             return jsonify(success=False, message="Missing fields"), 400
         
         if not AuthController.authenticate(data['username'], data['password']):
-            return jsonify(success=False, message="Invalid credentials"), 401
+            return jsonify(success=False, message="Unauthorized"), 401
         
         valid, message = AuthController.validate_registration_data(data)
         if not valid:

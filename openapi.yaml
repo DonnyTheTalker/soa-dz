@@ -24,7 +24,7 @@ paths:
                 $ref: '#/components/schemas/Response'
         '400':
           description: Registration failed
-  /authenticate:
+  /login:
     post:
       summary: Authenticate a user
       requestBody:
@@ -42,7 +42,9 @@ paths:
                 $ref: '#/components/schemas/Response'
         '400':
           description: Authentication failed
-  /get_user:
+        '401':
+          description: Invalid credentials
+  /user:
     get:
       summary: Get user data
       responses:
@@ -54,33 +56,34 @@ paths:
                 $ref: '#/components/schemas/UserDetails'
         '400':
           description: Failed to retrieve user data
+  /update_profile:
+    patch:
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileData'
+      responses:
+        '200':
+          description: Successfully updated user profile
+        '401':
+          description: Unauthorized
 components:
   schemas:
     RegistrationData:
       type: object
       properties:
-        first_name:
-          type: string
-        last_name:
-          type: string
-        birth_date:
-          type: string
-          format: date
         email:
           type: string
           format: email
-        phone_number:
-          type: string
         username:
           type: string
         password:
           type: string
       required: 
-        - first_name
-        - last_name
-        - birth_date
         - email
-        - phone_number
         - username
         - password
       
@@ -111,6 +114,19 @@ components:
         phone_number:
           type: string
         username:
+          type: string
+    
+    UpdateProfileData:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        birth_date:
+          type: string
+          format: date
+        phone_number:
           type: string
 
     Response:
