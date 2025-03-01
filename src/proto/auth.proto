@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+    rpc RegisterUser (RegisterRequest) returns (RegisterResponse);
+    rpc AuthenticateUser (AuthenticateRequest) returns (AuthenticateResponse);
+    rpc GetUserDetails (UserRequest) returns (UserResponse);
+    rpc UpdateUserProfile (ProfileUpdateRequest) returns (UpdateResponse);
+}
+
+message RegisterRequest {
+    string email = 1;
+    string username = 2;
+    string password = 3;
+}
+
+message RegisterResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message AuthenticateRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message AuthenticateResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message UserRequest {
+    string username = 1;
+}
+
+message UserResponse {
+    bool found = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string birth_date = 4;
+    string email = 5;
+    string phone_number = 6;
+    string username = 7;
+}
+
+message ProfileUpdateRequest {
+    string username = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string birth_date = 4;
+    string email = 5;
+    string phone_number = 6;
+    string password = 7;
+}
+
+message UpdateResponse {
+    bool success = 1;
+    string message = 2;
+}

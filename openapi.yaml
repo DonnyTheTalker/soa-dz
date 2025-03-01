@@ -1,0 +1,138 @@
+openapi: 3.0.3
+info:
+  title: Auth API
+  description: API for user registration, authentication, and fetching user details
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationData'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: Registration failed
+  /login:
+    post:
+      summary: Authenticate a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthData'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        '400':
+          description: Authentication failed
+        '401':
+          description: Invalid credentials
+  /user:
+    get:
+      summary: Get user data
+      responses:
+        '200':
+          description: Successfully retrieved user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        '400':
+          description: Failed to retrieve user data
+  /update_profile:
+    patch:
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileData'
+      responses:
+        '200':
+          description: Successfully updated user profile
+        '401':
+          description: Unauthorized
+components:
+  schemas:
+    RegistrationData:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        password:
+          type: string
+      required: 
+        - email
+        - username
+        - password
+      
+    AuthData:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    
+    UserDetails:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        birth_date:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+        username:
+          type: string
+    
+    UpdateProfileData:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        birth_date:
+          type: string
+          format: date
+        phone_number:
+          type: string
+
+    Response:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
