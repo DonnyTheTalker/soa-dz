@@ -11,7 +11,7 @@ class User(Base):
     hashed_password = mapped_column(String, nullable=False)
     first_name = mapped_column(String)
     last_name = mapped_column(String)
-    birth_date = mapped_column(Date)
+    birth_date = mapped_column(String)
     email = mapped_column(String, nullable=False)
     phone_number = mapped_column(String)
     created_at = mapped_column(DateTime(timezone=True), server_default=func.now())

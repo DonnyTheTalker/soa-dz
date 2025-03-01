@@ -1,5 +1,7 @@
 import grpc
 import re
+import os
+
 from datetime import datetime
 from flask import request, jsonify
 
@@ -10,7 +12,8 @@ from proto.auth_pb2_grpc import AuthServiceStub
 class AuthController:
     @staticmethod
     def grpc_channel():
-        return grpc.insecure_channel('user:50051')
+        port = os.environ.get('GRPC_SERVER_PORT', 50051)
+        return grpc.insecure_channel(f'user:{port}')
 
     @staticmethod
     def register():
@@ -41,7 +44,7 @@ class AuthController:
         if not AuthController.check_required_fields(data, required_fields):
             return jsonify(success=False, message="Missing fields"), 400
         
-        if not AuthController.authenticate(data['username'], data['password']):
+        if not AuthController.authenticate():
             return jsonify(success=False, message="Unauthorized"), 401
         
         valid, message = AuthController.validate_registration_data(data)

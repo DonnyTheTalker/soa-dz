@@ -1,4 +1,5 @@
 import grpc
+import os
 from flask import jsonify, request
 
 from proto.auth_pb2 import UserRequest
@@ -8,7 +9,8 @@ from proto.auth_pb2_grpc import AuthServiceStub
 class UserController:
     @staticmethod
     def grpc_channel():
-        return grpc.insecure_channel('user:50051')
+        port = os.environ.get('GRPC_SERVER_PORT', 50051)
+        return grpc.insecure_channel(f'user:{port}')
 
     @staticmethod
     def get_user():
@@ -22,6 +24,7 @@ class UserController:
             response = stub.GetUserDetails(UserRequest(username=username))
             if response.found:
                 return jsonify(
+                    success=True,
                     first_name=response.first_name,
                     last_name=response.last_name,
                     birth_date=response.birth_date,

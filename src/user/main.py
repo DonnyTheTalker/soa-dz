@@ -35,7 +35,7 @@ class AuthServicer(auth_pb2_grpc.AuthServiceServicer):
                     username=user.username,
                     first_name=user.first_name,
                     last_name=user.last_name,
-                    birth_date=str(user.birth_date),
+                    birth_date=user.birth_date,
                     email=user.email,
                     phone_number=user.phone_number,
                 )

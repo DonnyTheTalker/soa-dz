@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 import hashlib
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime
 
 from models import User
 
@@ -33,7 +32,7 @@ def update_user_profile(db: Session, username: str, first_name: str = None, last
         if last_name is not None:
             user.last_name = last_name
         if birth_date is not None:
-            user.birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date()
+            user.birth_date = birth_date
         if phone_number is not None:
             user.phone_number = phone_number
         

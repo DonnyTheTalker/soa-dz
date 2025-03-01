@@ -2,9 +2,9 @@ version: "3.9"
 
 services:
   api:
-    build: ./api
+    build: ../api
     ports:
-      - "5000:5000"
+      - "5100:5000"
     depends_on:
       - user
     environment:
@@ -12,9 +12,9 @@ services:
       - GRPC_SERVER_PORT=50051
 
   user:
-    build: ./user
+    build: ../user
     ports:
-      - "50051:50051"
+      - "51051:50051"
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
@@ -22,14 +22,20 @@ services:
       DATABASE_URL: "postgresql://myuser:mypassword@db:5432/mydatabase"
     depends_on:
       - db
-    # command: ["./wait-for-it.sh", "db:5432", "--", "python", "main.py"]
 
   db:
     image: postgres
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
+
+  tests:
+    build: .
+    depends_on:
+      - api
+      - user
+      - db
