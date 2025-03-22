@@ -9,8 +9,9 @@ from proto.auth_pb2_grpc import AuthServiceStub
 class UserController:
     @staticmethod
     def grpc_channel():
-        port = os.environ.get('GRPC_SERVER_PORT', 50051)
-        return grpc.insecure_channel(f'user:{port}')
+        host = os.environ.get('USER_GRPC_SERVER_HOST', 'user')
+        port = os.environ.get('USER_GRPC_SERVER_PORT', 50051)
+        return grpc.insecure_channel(f'{host}:{port}')
 
     @staticmethod
     def get_user():

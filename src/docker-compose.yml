@@ -8,28 +8,28 @@ services:
     depends_on:
       - user
     environment:
-      - GRPC_SERVER_HOST=user
-      - GRPC_SERVER_PORT=50051
+      - API_SERVER_PORT=5000
+      - USER_GRPC_SERVER_HOST=user
+      - USER_GRPC_SERVER_PORT=50051
 
   user:
     build: ./user
     ports:
       - "50051:50051"
     environment:
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: user_database
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
-      DATABASE_URL: "postgresql://myuser:mypassword@db:5432/mydatabase"
+      DATABASE_URL: "postgresql://myuser:mypassword@user_db:5432/user_database"
     depends_on:
-      - db
-    # command: ["./wait-for-it.sh", "db:5432", "--", "python", "main.py"]
+      - user_db
 
-  db:
+  user_db:
     image: postgres
     restart: always
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: user_database
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
