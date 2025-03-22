@@ -1,5 +1,6 @@
 from concurrent import futures
 import grpc
+import os
 
 from proto import auth_pb2, auth_pb2_grpc
 from db import SessionLocal, engine
@@ -58,7 +59,8 @@ class AuthServicer(auth_pb2_grpc.AuthServiceServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     auth_pb2_grpc.add_AuthServiceServicer_to_server(AuthServicer(), server)
-    server.add_insecure_port('[::]:50051')
+    port=os.environ.get('USER_SERVER_PORT', 50051)
+    server.add_insecure_port(f'[::]:{port}')
     server.start()
     server.wait_for_termination()
 

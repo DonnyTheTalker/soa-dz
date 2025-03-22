@@ -8,15 +8,16 @@ services:
     depends_on:
       - user
     environment:
-      - API_SERVER_PORT=5000
-      - USER_GRPC_SERVER_HOST=user
-      - USER_GRPC_SERVER_PORT=50051
+      API_SERVER_PORT: 5000
+      USER_GRPC_SERVER_HOST: user
+      USER_GRPC_SERVER_PORT: 50051
 
   user:
     build: ./user
     ports:
       - "50051:50051"
     environment:
+      USER_SERVER_PORT: 50051
       POSTGRES_DB: user_database
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
