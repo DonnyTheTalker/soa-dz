@@ -152,3 +152,16 @@ def test_update_user():
     data = response.json()
     assert data['success'] is True
     assert data['phone_number'] == "88005553535"
+
+    response = requests.patch(f"{API_URL}/update_profile", json={
+        "username": "test_update_user",
+        "password": "goodPassword13",
+        "phone_number": "88005553536"
+    })
+    assert response.status_code == 401
+
+    response = requests.get(f"{API_URL}/user", params={'username': 'test_update_user'})
+    assert response.status_code == 200
+    data = response.json()
+    assert data['success'] is True
+    assert data['phone_number'] == "88005553535"

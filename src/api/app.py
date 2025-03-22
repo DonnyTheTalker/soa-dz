@@ -12,6 +12,9 @@ def register():
 
 @app.route('/update_profile', methods=['PATCH'])
 def update_profile():
+    auth_response, status_code = AuthController.authenticate()
+    if status_code != 200:
+        return auth_response, status_code
     return AuthController.update_profile()
 
 @app.route('/login', methods=['POST'])

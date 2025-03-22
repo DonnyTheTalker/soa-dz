@@ -45,9 +45,6 @@ class AuthController:
         if not AuthController.check_required_fields(data, required_fields):
             return jsonify(success=False, message="Missing fields"), 400
         
-        if not AuthController.authenticate():
-            return jsonify(success=False, message="Unauthorized"), 401
-        
         valid, message = AuthController.validate_registration_data(data)
         if not valid:
             return jsonify(success=False, message=message), 400
@@ -69,7 +66,7 @@ class AuthController:
 
         required_fields = ['username', 'password']
         if not AuthController.check_required_fields(data, required_fields):
-            return jsonify(success=False, message="Missing fields"), 400
+            return jsonify(success=False, message="Missing authentication fields"), 400
 
         with AuthController.grpc_channel() as channel:
             stub = AuthServiceStub(channel)
