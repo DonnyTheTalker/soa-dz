@@ -11,6 +11,8 @@ services:
       API_SERVER_PORT: 5000
       USER_GRPC_SERVER_HOST: user
       USER_GRPC_SERVER_PORT: 50051
+      POSTS_GRPC_SERVER_HOST: posts
+      POSTS_GRPC_SERVER_PORT: 50052
 
   user:
     build: ../user
@@ -21,23 +23,42 @@ services:
       POSTGRES_DB: user_database
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
-      DATABASE_URL: "postgresql://myuser:mypassword@user_db:5432/user_database"
+      DATABASE_URL: "postgresql://myuser:mypassword@db:5432/user_database"
     depends_on:
-      - user_db
+      - db
 
-  user_db:
+  db:
     image: postgres
     restart: always
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: user_database
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
+    volumes:
+      # - db_data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+
+  posts:
+    build: ./posts
+    ports:
+      - "51052:50052"
+    environment:
+      USER_SERVER_PORT: 50052
+      POSTGRES_DB: posts_database
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      DATABASE_URL: "postgresql://myuser:mypassword@db:5432/posts_database"
+    depends_on:
+      - db
 
   tests:
     build: .
     depends_on:
       - api
       - user
-      - user_db
+      - db
+      - posts
+
+# volumes:
+#   db_data:

@@ -27,16 +27,14 @@ class AuthController:
         valid, message = AuthController.validate_registration_data(data)
         if not valid:
             return jsonify(success=False, message=message), 400
-        
+
         with AuthController.grpc_channel() as channel:
             stub = AuthServiceStub(channel)
-            response = stub.RegisterUser(RegisterRequest(
-                email=data['email'],
-                username=data['username'],
-                password=data['password']
-            ))
+            response = stub.RegisterUser(
+                RegisterRequest(email=data['email'], username=data['username'], password=data['password'])
+            )
             return jsonify(success=response.success, message=response.message), 200 if response.success else 400
-        
+
     @staticmethod
     def update_profile():
         data = request.get_json()
@@ -44,20 +42,22 @@ class AuthController:
         required_fields = ['username', 'password']
         if not AuthController.check_required_fields(data, required_fields):
             return jsonify(success=False, message="Missing fields"), 400
-        
+
         valid, message = AuthController.validate_registration_data(data)
         if not valid:
             return jsonify(success=False, message=message), 400
 
         with AuthController.grpc_channel() as channel:
             stub = AuthServiceStub(channel)
-            response = stub.UpdateUserProfile(ProfileUpdateRequest(
-                username=data['username'],
-                first_name=data.get('first_name', None),
-                last_name=data.get('last_name', None),
-                birth_date=data.get('birth_date', None),
-                phone_number=data.get('phone_number', None)
-            ))
+            response = stub.UpdateUserProfile(
+                ProfileUpdateRequest(
+                    username=data['username'],
+                    first_name=data.get('first_name', None),
+                    last_name=data.get('last_name', None),
+                    birth_date=data.get('birth_date', None),
+                    phone_number=data.get('phone_number', None),
+                )
+            )
             return jsonify({"success": response.success, "message": response.message})
 
     @staticmethod
@@ -70,12 +70,9 @@ class AuthController:
 
         with AuthController.grpc_channel() as channel:
             stub = AuthServiceStub(channel)
-            response = stub.AuthenticateUser(AuthenticateRequest(
-                username=data['username'],
-                password=data['password']
-            ))
+            response = stub.AuthenticateUser(AuthenticateRequest(username=data['username'], password=data['password']))
             return jsonify(success=response.success, message=response.message), 200 if response.success else 401
-    
+
     @staticmethod
     def validate_registration_data(data):
         if 'birth_date' in data and not AuthController.is_valid_birth_date(data['birth_date']):
@@ -91,11 +88,11 @@ class AuthController:
             return False, "Password must be at least 8 characters long, contain a number and an uppercase letter"
 
         return True, ""
-    
+
     @staticmethod
     def check_required_fields(data, required_fields):
         return all(field in data for field in required_fields)
-    
+
     @staticmethod
     def is_valid_birth_date(birth_date_str):
         try:

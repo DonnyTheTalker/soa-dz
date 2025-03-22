@@ -4,18 +4,20 @@ from sqlalchemy.exc import IntegrityError
 
 from models import User
 
+
 def get_user(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
+
 def create_user(db: Session, username: str, password: str, email: str):
     hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    
+
     user = User(
         username=username,
         hashed_password=hashed_password,
         email=email,
     )
-    
+
     db.add(user)
     try:
         db.commit()
@@ -24,7 +26,15 @@ def create_user(db: Session, username: str, password: str, email: str):
         return None
     return user
 
-def update_user_profile(db: Session, username: str, first_name: str = None, last_name: str = None, birth_date: str = None, phone_number: str = None):
+
+def update_user_profile(
+    db: Session,
+    username: str,
+    first_name: str = None,
+    last_name: str = None,
+    birth_date: str = None,
+    phone_number: str = None,
+):
     user = get_user(db, username)
     if user:
         if first_name is not None:
@@ -35,10 +45,11 @@ def update_user_profile(db: Session, username: str, first_name: str = None, last
             user.birth_date = birth_date
         if phone_number is not None:
             user.phone_number = phone_number
-        
+
         db.commit()
         return user
     return None
+
 
 def authenticate_user(db: Session, username: str, password: str):
     user = get_user(db, username)

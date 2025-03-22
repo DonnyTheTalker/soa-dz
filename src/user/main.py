@@ -9,15 +9,11 @@ from crud import create_user, authenticate_user, get_user, update_user_profile
 
 Base.metadata.create_all(bind=engine)
 
+
 class AuthServicer(auth_pb2_grpc.AuthServiceServicer):
     def RegisterUser(self, request, context):
         with SessionLocal() as db:
-            user = create_user(
-                db,
-                username=request.username,
-                password=request.password,
-                email=request.email
-            )
+            user = create_user(db, username=request.username, password=request.password, email=request.email)
             if user is not None:
                 return auth_pb2.RegisterResponse(success=True, message="User created")
             return auth_pb2.RegisterResponse(success=False, message="User already exists")
@@ -25,7 +21,9 @@ class AuthServicer(auth_pb2_grpc.AuthServiceServicer):
     def AuthenticateUser(self, request, context):
         with SessionLocal() as db:
             valid = authenticate_user(db, request.username, request.password)
-            return auth_pb2.AuthenticateResponse(success=valid, message="Auth succeeded" if valid else "Invalid credentials")
+            return auth_pb2.AuthenticateResponse(
+                success=valid, message="Auth succeeded" if valid else "Invalid credentials"
+            )
 
     def GetUserDetails(self, request, context):
         with SessionLocal() as db:
@@ -41,7 +39,7 @@ class AuthServicer(auth_pb2_grpc.AuthServiceServicer):
                     phone_number=user.phone_number,
                 )
             return auth_pb2.UserResponse(found=False)
-        
+
     def UpdateUserProfile(self, request, context):
         with SessionLocal() as db:
             user = update_user_profile(
@@ -50,19 +48,21 @@ class AuthServicer(auth_pb2_grpc.AuthServiceServicer):
                 first_name=(request.first_name if request.first_name else None),
                 last_name=(request.last_name if request.last_name else None),
                 birth_date=(request.birth_date if request.birth_date else None),
-                phone_number=(request.phone_number if request.phone_number else None)
+                phone_number=(request.phone_number if request.phone_number else None),
             )
             if user:
                 return auth_pb2.UpdateResponse(success=True, message="User profile updated")
             return auth_pb2.UpdateResponse(success=False, message="User not found or error occurred")
 
+
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     auth_pb2_grpc.add_AuthServiceServicer_to_server(AuthServicer(), server)
-    port=os.environ.get('USER_SERVER_PORT', 50051)
+    port = os.environ.get('USER_SERVER_PORT', 50051)
     server.add_insecure_port(f'[::]:{port}')
     server.start()
     server.wait_for_termination()
+
 
 if __name__ == "__main__":
     serve()

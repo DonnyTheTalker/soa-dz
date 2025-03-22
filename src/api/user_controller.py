@@ -24,14 +24,17 @@ class UserController:
             stub = AuthServiceStub(channel)
             response = stub.GetUserDetails(UserRequest(username=username))
             if response.found:
-                return jsonify(
-                    success=True,
-                    first_name=response.first_name,
-                    last_name=response.last_name,
-                    birth_date=response.birth_date,
-                    email=response.email,
-                    phone_number=response.phone_number,
-                    username=response.username
-                ), 200
+                return (
+                    jsonify(
+                        success=True,
+                        first_name=response.first_name,
+                        last_name=response.last_name,
+                        birth_date=response.birth_date,
+                        email=response.email,
+                        phone_number=response.phone_number,
+                        username=response.username,
+                    ),
+                    200,
+                )
             else:
                 return jsonify(success=False, message="User not found"), 404
