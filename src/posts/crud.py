@@ -52,10 +52,10 @@ def get_post(db: Session, post_id: int, creator_id: str):
     )
 
 
-def list_posts(db: Session, page_number: int, page_size: int, creator_id: str):
+def list_posts(db: Session, page_number: int, page_size: int, creator_id: str, author_id: str):
     return (
         db.query(Post)
-        .filter((Post.creator_id == creator_id) | (Post.is_private == False))
+        .filter((Post.creator_id == author_id) & ((Post.is_private == False) | (Post.creator_id == creator_id)))
         .order_by(Post.id)
         .offset(page_number * page_size)
         .limit(page_size)

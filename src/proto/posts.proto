@@ -41,6 +41,7 @@ message ListPostsRequest {
     int32 page_number = 1;
     int32 page_size = 2;
     string creator_id = 3;
+    string author_id = 4;
 }
 
 message PostResponse {

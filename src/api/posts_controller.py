@@ -54,7 +54,7 @@ class PostsController:
 
         required_fields = ['id', 'username']
         if not AuthController.check_required_fields(data, required_fields):
-            return jsonify(success=False, message="Missing authentication fields"), 400
+            return jsonify(success=False, message="Missing fields"), 400
 
         with PostsController.grpc_channel() as channel:
             stub = posts_pb2_grpc.PostServiceStub(channel)
@@ -77,7 +77,7 @@ class PostsController:
 
         required_fields = ['id', 'username']
         if not AuthController.check_required_fields(data, required_fields):
-            return jsonify(success=False, message="Missing authentication fields"), 400
+            return jsonify(success=False, message="Missing fields"), 400
 
         with PostsController.grpc_channel() as channel:
             stub = posts_pb2_grpc.PostServiceStub(channel)
@@ -91,16 +91,17 @@ class PostsController:
     def list_posts():
         data = request.get_json()
 
-        required_fields = ['username']
+        required_fields = ['username', 'author']
         if not AuthController.check_required_fields(data, required_fields):
-            return jsonify(success=False, message="Missing authentication fields"), 400
+            return jsonify(success=False, message="Missing fields"), 400
 
         with PostsController.grpc_channel() as channel:
             stub = posts_pb2_grpc.PostServiceStub(channel)
             page_number = data.get('page_number', 0)
             page_size = data.get('page_size', 10)
             grpc_request = posts_pb2.ListPostsRequest(
-                creator_id=data['username'], page_number=page_number, page_size=page_size
+                creator_id=data['username'], page_number=page_number, page_size=page_size,
+                author_id=data['author']
             )
             response = stub.ListPosts(grpc_request)
             return jsonify(

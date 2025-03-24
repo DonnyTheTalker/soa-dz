@@ -11,7 +11,6 @@ _version_not_supported = False
 
 try:
     from grpc._utilities import first_version_is_lower
-
     _version_not_supported = first_version_is_lower(GRPC_VERSION, GRPC_GENERATED_VERSION)
 except ImportError:
     _version_not_supported = True
@@ -36,35 +35,30 @@ class PostServiceStub(object):
             channel: A grpc.Channel.
         """
         self.CreatePost = channel.unary_unary(
-            '/posts.PostService/CreatePost',
-            request_serializer=posts__pb2.CreatePostRequest.SerializeToString,
-            response_deserializer=posts__pb2.PostResponse.FromString,
-            _registered_method=True,
-        )
+                '/posts.PostService/CreatePost',
+                request_serializer=posts__pb2.CreatePostRequest.SerializeToString,
+                response_deserializer=posts__pb2.PostResponse.FromString,
+                _registered_method=True)
         self.DeletePost = channel.unary_unary(
-            '/posts.PostService/DeletePost',
-            request_serializer=posts__pb2.DeletePostRequest.SerializeToString,
-            response_deserializer=posts__pb2.PostResponse.FromString,
-            _registered_method=True,
-        )
+                '/posts.PostService/DeletePost',
+                request_serializer=posts__pb2.DeletePostRequest.SerializeToString,
+                response_deserializer=posts__pb2.PostResponse.FromString,
+                _registered_method=True)
         self.UpdatePost = channel.unary_unary(
-            '/posts.PostService/UpdatePost',
-            request_serializer=posts__pb2.UpdatePostRequest.SerializeToString,
-            response_deserializer=posts__pb2.PostResponse.FromString,
-            _registered_method=True,
-        )
+                '/posts.PostService/UpdatePost',
+                request_serializer=posts__pb2.UpdatePostRequest.SerializeToString,
+                response_deserializer=posts__pb2.PostResponse.FromString,
+                _registered_method=True)
         self.GetPost = channel.unary_unary(
-            '/posts.PostService/GetPost',
-            request_serializer=posts__pb2.GetPostRequest.SerializeToString,
-            response_deserializer=posts__pb2.PostResponse.FromString,
-            _registered_method=True,
-        )
+                '/posts.PostService/GetPost',
+                request_serializer=posts__pb2.GetPostRequest.SerializeToString,
+                response_deserializer=posts__pb2.PostResponse.FromString,
+                _registered_method=True)
         self.ListPosts = channel.unary_unary(
-            '/posts.PostService/ListPosts',
-            request_serializer=posts__pb2.ListPostsRequest.SerializeToString,
-            response_deserializer=posts__pb2.ListPostsResponse.FromString,
-            _registered_method=True,
-        )
+                '/posts.PostService/ListPosts',
+                request_serializer=posts__pb2.ListPostsRequest.SerializeToString,
+                response_deserializer=posts__pb2.ListPostsResponse.FromString,
+                _registered_method=True)
 
 
 class PostServiceServicer(object):
@@ -103,54 +97,53 @@ class PostServiceServicer(object):
 
 def add_PostServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'CreatePost': grpc.unary_unary_rpc_method_handler(
-            servicer.CreatePost,
-            request_deserializer=posts__pb2.CreatePostRequest.FromString,
-            response_serializer=posts__pb2.PostResponse.SerializeToString,
-        ),
-        'DeletePost': grpc.unary_unary_rpc_method_handler(
-            servicer.DeletePost,
-            request_deserializer=posts__pb2.DeletePostRequest.FromString,
-            response_serializer=posts__pb2.PostResponse.SerializeToString,
-        ),
-        'UpdatePost': grpc.unary_unary_rpc_method_handler(
-            servicer.UpdatePost,
-            request_deserializer=posts__pb2.UpdatePostRequest.FromString,
-            response_serializer=posts__pb2.PostResponse.SerializeToString,
-        ),
-        'GetPost': grpc.unary_unary_rpc_method_handler(
-            servicer.GetPost,
-            request_deserializer=posts__pb2.GetPostRequest.FromString,
-            response_serializer=posts__pb2.PostResponse.SerializeToString,
-        ),
-        'ListPosts': grpc.unary_unary_rpc_method_handler(
-            servicer.ListPosts,
-            request_deserializer=posts__pb2.ListPostsRequest.FromString,
-            response_serializer=posts__pb2.ListPostsResponse.SerializeToString,
-        ),
+            'CreatePost': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreatePost,
+                    request_deserializer=posts__pb2.CreatePostRequest.FromString,
+                    response_serializer=posts__pb2.PostResponse.SerializeToString,
+            ),
+            'DeletePost': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeletePost,
+                    request_deserializer=posts__pb2.DeletePostRequest.FromString,
+                    response_serializer=posts__pb2.PostResponse.SerializeToString,
+            ),
+            'UpdatePost': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdatePost,
+                    request_deserializer=posts__pb2.UpdatePostRequest.FromString,
+                    response_serializer=posts__pb2.PostResponse.SerializeToString,
+            ),
+            'GetPost': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetPost,
+                    request_deserializer=posts__pb2.GetPostRequest.FromString,
+                    response_serializer=posts__pb2.PostResponse.SerializeToString,
+            ),
+            'ListPosts': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListPosts,
+                    request_deserializer=posts__pb2.ListPostsRequest.FromString,
+                    response_serializer=posts__pb2.ListPostsResponse.SerializeToString,
+            ),
     }
-    generic_handler = grpc.method_handlers_generic_handler('posts.PostService', rpc_method_handlers)
+    generic_handler = grpc.method_handlers_generic_handler(
+            'posts.PostService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers('posts.PostService', rpc_method_handlers)
 
 
-# This class is part of an EXPERIMENTAL API.
+ # This class is part of an EXPERIMENTAL API.
 class PostService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def CreatePost(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
+    def CreatePost(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(
             request,
             target,
@@ -165,22 +158,19 @@ class PostService(object):
             wait_for_ready,
             timeout,
             metadata,
-            _registered_method=True,
-        )
+            _registered_method=True)
 
     @staticmethod
-    def DeletePost(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
+    def DeletePost(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(
             request,
             target,
@@ -195,22 +185,19 @@ class PostService(object):
             wait_for_ready,
             timeout,
             metadata,
-            _registered_method=True,
-        )
+            _registered_method=True)
 
     @staticmethod
-    def UpdatePost(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
+    def UpdatePost(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(
             request,
             target,
@@ -225,22 +212,19 @@ class PostService(object):
             wait_for_ready,
             timeout,
             metadata,
-            _registered_method=True,
-        )
+            _registered_method=True)
 
     @staticmethod
-    def GetPost(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
+    def GetPost(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(
             request,
             target,
@@ -255,22 +239,19 @@ class PostService(object):
             wait_for_ready,
             timeout,
             metadata,
-            _registered_method=True,
-        )
+            _registered_method=True)
 
     @staticmethod
-    def ListPosts(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
+    def ListPosts(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
         return grpc.experimental.unary_unary(
             request,
             target,
@@ -285,5 +266,4 @@ class PostService(object):
             wait_for_ready,
             timeout,
             metadata,
-            _registered_method=True,
-        )
+            _registered_method=True)

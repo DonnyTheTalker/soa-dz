@@ -43,13 +43,13 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
         with SessionLocal() as db:
             post = crud.get_post(db, request.id, request.creator_id)
             if post:
-                return posts_pb2.PostResponse(success=True, post=self._post_to_response(post))
+                return posts_pb2.PostResponse(success=True, message="Post found", post=self._post_to_response(post))
             else:
                 return posts_pb2.PostResponse(success=False, message="Post not found or access denied")
 
     def ListPosts(self, request, context):
         with SessionLocal() as db:
-            posts = crud.list_posts(db, request.page_number, request.page_size, request.creator_id)
+            posts = crud.list_posts(db, request.page_number, request.page_size, request.creator_id, request.author_id)
             response_posts = [self._post_to_response(post) for post in posts]
             return posts_pb2.ListPostsResponse(success=True, posts=response_posts)
 
