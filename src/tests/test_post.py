@@ -116,7 +116,7 @@ def test_delete_post():
             'id': post_id,
         },
     )
-    assert response.status_code == 400
+    assert response.status_code == 404
     data = response.json()
     assert data['success'] is False
     assert data['message'] == "Post not found or access denied"
@@ -168,7 +168,7 @@ def test_get_post():
     response = requests.get(
         f"{API_URL}/get_post", json={'username': 'test_get_post', 'password': 'goodPassword1', 'id': invalid_id}
     )
-    assert response.status_code == 400
+    assert response.status_code == 404
     data = response.json()
     assert data['success'] is False
     assert data['message'] == "Post not found or access denied"
@@ -228,7 +228,7 @@ def test_get_private_post():
     response = requests.get(
         f"{API_URL}/get_post", json={'username': 'test_get_private_post_2', 'password': 'goodPassword1', 'id': post_id}
     )
-    assert response.status_code == 400
+    assert response.status_code == 404
     data = response.json()
     assert data['success'] is False
     assert data['message'] == "Post not found or access denied"
@@ -306,7 +306,7 @@ def test_update_post():
             'description': 'New description',
         },
     )
-    assert response.status_code == 400
+    assert response.status_code == 404
     data = response.json()
     assert data['success'] is False
     assert data['message'] == "Post not found or access denied"
@@ -330,7 +330,7 @@ def test_update_post():
             'description': 'New description',
         },
     )
-    assert response.status_code == 400
+    assert response.status_code == 404
     data = response.json()
     assert data['success'] is False
     assert data['message'] == "Post not found or access denied"

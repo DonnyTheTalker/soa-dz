@@ -46,7 +46,7 @@ class PostsController:
             stub = posts_pb2_grpc.PostServiceStub(channel)
             grpc_request = posts_pb2.DeletePostRequest(id=data['id'], creator_id=data['username'])
             response = stub.DeletePost(grpc_request)
-            return jsonify({"success": response.success, "message": response.message}), 200 if response.success else 400
+            return jsonify({"success": response.success, "message": response.message}), 200 if response.success else 404
 
     @staticmethod
     def update_post():
@@ -69,7 +69,7 @@ class PostsController:
             response = stub.UpdatePost(grpc_request)
             return jsonify(
                 {"success": response.success, "message": response.message, "post": MessageToDict(response.post)}
-            ), (200 if response.success else 400)
+            ), (200 if response.success else 404)
 
     @staticmethod
     def get_post():
@@ -85,7 +85,7 @@ class PostsController:
             response = stub.GetPost(grpc_request)
             return jsonify(
                 {"success": response.success, "message": response.message, "post": MessageToDict(response.post)}
-            ), (200 if response.success else 400)
+            ), (200 if response.success else 404)
 
     @staticmethod
     def list_posts():
@@ -110,4 +110,4 @@ class PostsController:
                     "message": response.message,
                     "posts": [MessageToDict(post) for post in response.posts],
                 }
-            ), (200 if response.success else 400)
+            ), (200 if response.success else 404)
