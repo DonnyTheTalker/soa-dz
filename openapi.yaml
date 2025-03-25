@@ -70,6 +70,90 @@ paths:
           description: Successfully updated user profile
         '401':
           description: Unauthorized
+  /create_post:
+    post:
+      summary: Create a new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostData'
+      responses:
+        '200':
+          description: Successfully created post
+        '400':
+          description: Failed to create post
+        '401':
+          description: Unauthorized
+  /delete_post:
+    delete:
+      summary: Delete a post
+      parameters:
+        - name: post_id
+          in: query
+          description: ID of the post to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted post
+        '400':
+          description: Failed to delete post
+        '401':
+          description: Unauthorized
+  /update_post:
+    patch:
+      summary: Update a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostData'
+      responses:
+        '200':
+          description: Successfully updated post
+        '400':
+          description: Failed to update post
+        '401':
+          description: Unauthorized
+  /get_post:
+    get:
+      summary: Get a post
+      parameters:
+        - name: post_id
+          in: query
+          description: ID of the post to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostData'
+        '400':
+          description: Failed to retrieve post
+  /list_posts:
+    get:
+      summary: List all posts
+      responses:
+        '200':
+          description: Successfully listed posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostData'
+        '400':
+          description: Failed to list posts
+        '401':
+          description: Unauthorized
 components:
   schemas:
     RegistrationData:
@@ -136,3 +220,19 @@ components:
           type: boolean
         message:
           type: string
+
+    PostData:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        is_private:
+          type: boolean
+          default: false
+        
