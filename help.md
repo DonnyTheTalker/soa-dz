@@ -23,11 +23,11 @@ curl -X POST -H "Content-Type: application/json" \
 http://localhost:5000/create_post
 
 curl -X GET -H "Content-Type: application/json" \
--d '{"username": "testuser", "password": "testpassS1", "id": 4}' \
+-d '{"username": "testuser", "password": "testpassS1", "id": 1}' \
 http://localhost:5000/get_post
 
 curl -X PATCH -H "Content-Type: application/json" \
--d '{"username": "testuser", "password": "testpassS1", "id": 4, "tags": ["tag1", "tag2"]}' \
+-d '{"username": "testuser", "password": "testpassS1", "id": 1, "tags": ["tag1", "tag2"]}' \
 http://localhost:5000/update_post
 
 curl -X GET -H "Content-Type: application/json" \
@@ -35,7 +35,7 @@ curl -X GET -H "Content-Type: application/json" \
 http://localhost:5000/list_posts
 
 curl -X PATCH -H "Content-Type: application/json" \
--d '{"username": "testuser", "password": "testpassS1", "id": 3, "title": "korchma"}' \
+-d '{"username": "testuser", "password": "testpassS1", "id": 1, "title": "korchma"}' \
 http://localhost:5000/update_post
 
 curl -X POST -H "Content-Type: application/json" \
@@ -53,3 +53,11 @@ http://localhost:5000/register
 curl -X GET -H "Content-Type: application/json" \
 -d '{"username": "testuser1", "password": "testpasS1", "page_number": 0, "page_size": 10, "author": "testuser"}' \
 http://localhost:5000/list_posts
+
+curl -X GET -H "Content-Type: application/json" \
+-d '{"username": "testuser1", "password": "testpasS1", "id": 1}' \
+http://localhost:5000/get_post
+
+curl -X GET -H "Content-Type: application/json" \
+-d '{"username": "testuser1", "password": "testpasS1", "id": 2}' \
+http://localhost:5000/get_post
