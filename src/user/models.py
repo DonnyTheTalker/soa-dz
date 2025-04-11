@@ -1,8 +1,10 @@
 from sqlalchemy.orm import DeclarativeBase, mapped_column
 from sqlalchemy import String, Date, DateTime, func
 
+
 class Base(DeclarativeBase):
     pass
+
 
 class User(Base):
     __tablename__ = "users"
