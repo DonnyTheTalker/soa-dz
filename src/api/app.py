@@ -71,6 +71,38 @@ def list_posts():
     return PostsController.list_posts()
 
 
+@app.route('/like_post', methods=['POST'])
+def like_post():
+    auth_response, status_code = AuthController.authenticate()
+    if status_code != 200:
+        return auth_response, status_code
+    return PostsController.like_post()
+
+
+@app.route('/unlike_post', methods=['POST'])
+def unlike_post():
+    auth_response, status_code = AuthController.authenticate()
+    if status_code != 200:
+        return auth_response, status_code
+    return PostsController.unlike_post()
+
+
+@app.route('/comment_post', methods=['POST'])
+def comment_post():
+    auth_response, status_code = AuthController.authenticate()
+    if status_code != 200:
+        return auth_response, status_code
+    return PostsController.comment_post()
+
+
+@app.route('/list_comments', methods=['GET'])
+def list_comments():
+    auth_response, status_code = AuthController.authenticate()
+    if status_code != 200:
+        return auth_response, status_code
+    return PostsController.list_comments()
+
+
 if __name__ == '__main__':
     port = os.environ.get('API_SERVER_PORT', 5000)
     app.run(debug=True, port=port, host='0.0.0.0')

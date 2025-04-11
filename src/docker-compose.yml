@@ -81,6 +81,7 @@ services:
       DATABASE_URL: "postgresql://myuser:mypassword@db:5432/posts_database"
     depends_on:
       - db
+      - kafka
 
   db:
     image: postgres

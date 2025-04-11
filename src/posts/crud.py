@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import Post
+from models import Post, Like, Comment
 
 
 def create_post(db: Session, title: str, description: str, creator_id: str, is_private: bool, tags: list):
@@ -57,6 +57,44 @@ def list_posts(db: Session, page_number: int, page_size: int, creator_id: str, a
         db.query(Post)
         .filter((Post.creator_id == author_id) & ((Post.is_private == False) | (Post.creator_id == creator_id)))
         .order_by(Post.id)
+        .offset(page_number * page_size)
+        .limit(page_size)
+        .all()
+    )
+
+
+def get_like(db: Session, post_id: int, creator_id: str):
+    return db.query(Like).filter(Like.post_id == post_id, Like.creator_id == creator_id).first()
+
+
+def like_post(db: Session, post_id: int, creator_id: str):
+    like = Like(post_id=post_id, creator_id=creator_id)
+    db.add(like)
+    db.commit()
+    return like
+
+
+def unlike_post(db: Session, post_id: int, creator_id: str):
+    like = db.query(Like).filter(Like.post_id == post_id, Like.creator_id == creator_id).first()
+    if like:
+        db.delete(like)
+        db.commit()
+        return True
+    return False
+
+
+def leave_comment(db: Session, post_id: int, comment: str, creator_id: str):
+    comment = Comment(post_id=post_id, comment=comment, creator_id=creator_id)
+    db.add(comment)
+    db.commit()
+    return comment
+
+
+def list_comments(db: Session, post_id: int, page_number: int, page_size: int):
+    return (
+        db.query(Comment)
+        .filter(Comment.post_id == post_id)
+        .order_by(Comment.id)
         .offset(page_number * page_size)
         .limit(page_size)
         .all()

@@ -1,7 +1,8 @@
 from concurrent import futures
 import grpc
 from proto import posts_pb2, posts_pb2_grpc
-from kafka_producer import PostsEventProducer
+
+# from kafka_producer import PostsEventProducer
 from db import SessionLocal, engine
 from models import Base
 import crud
@@ -11,8 +12,8 @@ Base.metadata.create_all(bind=engine)
 
 
 class PostService(posts_pb2_grpc.PostServiceServicer):
-    def __init__(self):
-        self.producer = PostsEventProducer()
+    # def __init__(self):
+    # self.producer = PostsEventProducer()
 
     def CreatePost(self, request, context):
         with SessionLocal() as db:
@@ -47,11 +48,11 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
         with SessionLocal() as db:
             post = crud.get_post(db, request.id, request.creator_id)
             if post:
-                self.producer.send_view_event(
-                    request.creator_id,
-                    "post",
-                    request.id,
-                )
+                # self.producer.send_view_event(
+                #     request.creator_id,
+                #     "post",
+                #     request.id,
+                # )
                 return posts_pb2.PostResponse(success=True, message="Post found", post=self._post_to_response(post))
             else:
                 return posts_pb2.PostResponse(success=False, message="Post not found or access denied")
@@ -61,6 +62,48 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
             posts = crud.list_posts(db, request.page_number, request.page_size, request.creator_id, request.author_id)
             response_posts = [self._post_to_response(post) for post in posts]
             return posts_pb2.ListPostsResponse(success=True, posts=response_posts)
+
+    def LikePost(self, request, context):
+        with SessionLocal() as db:
+            if not crud.get_post(db, request.post_id, request.creator_id):
+                return posts_pb2.LikePostResponse(success=False, message="Post not found or access denied")
+            if crud.get_like(db, request.post_id, request.creator_id):
+                return posts_pb2.LikePostResponse(success=False, message="Post already liked")
+            crud.like_post(db, request.post_id, request.creator_id)
+            return posts_pb2.LikePostResponse(success=True, message="Post liked")
+
+    def UnlikePost(self, request, context):
+        with SessionLocal() as db:
+            if not crud.get_post(db, request.post_id, request.creator_id):
+                return posts_pb2.LikePostResponse(success=False, message="Post not found or access denied")
+            if not crud.get_like(db, request.post_id, request.creator_id):
+                return posts_pb2.LikePostResponse(success=False, message="Post not liked")
+            crud.unlike_post(db, request.post_id, request.creator_id)
+            return posts_pb2.LikePostResponse(success=True, message="Post unliked")
+
+    def LeaveComment(self, request, context):
+        with SessionLocal() as db:
+            if not crud.get_post(db, request.post_id, request.creator_id):
+                return posts_pb2.LeaveCommentResponse(success=False, message="Post not found or access denied")
+            comment = crud.leave_comment(db, request.post_id, request.creator_id, request.text)
+            return posts_pb2.LeaveCommentResponse(
+                success=True, message="Comment left", comment=self._comment_to_response(comment)
+            )
+
+    def ListComments(self, request, context):
+        with SessionLocal() as db:
+            comments = crud.list_comments(db, request.post_id, request.page_number, request.page_size)
+            response_comments = [self._comment_to_response(comment) for comment in comments]
+            return posts_pb2.ListCommentsResponse(success=True, comments=response_comments)
+
+    def _comment_to_response(self, comment):
+        return posts_pb2.Comment(
+            id=comment.id,
+            post_id=comment.post_id,
+            creator_id=comment.creator_id,
+            text=comment.comment,
+            created_at=str(comment.created_at),
+        )
 
     def _post_to_response(self, post):
         return posts_pb2.Post(
