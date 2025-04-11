@@ -1,6 +1,7 @@
 from concurrent import futures
 import grpc
 from proto import posts_pb2, posts_pb2_grpc
+from kafka_producer import PostsEventProducer
 from db import SessionLocal, engine
 from models import Base
 import crud
@@ -10,6 +11,9 @@ Base.metadata.create_all(bind=engine)
 
 
 class PostService(posts_pb2_grpc.PostServiceServicer):
+    def __init__(self):
+        self.producer = PostsEventProducer()
+
     def CreatePost(self, request, context):
         with SessionLocal() as db:
             post = crud.create_post(
@@ -43,6 +47,11 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
         with SessionLocal() as db:
             post = crud.get_post(db, request.id, request.creator_id)
             if post:
+                self.producer.send_view_event(
+                    request.creator_id,
+                    "post",
+                    request.id,
+                )
                 return posts_pb2.PostResponse(success=True, message="Post found", post=self._post_to_response(post))
             else:
                 return posts_pb2.PostResponse(success=False, message="Post not found or access denied")
