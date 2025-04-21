@@ -2,7 +2,7 @@ from concurrent import futures
 import grpc
 from proto import posts_pb2, posts_pb2_grpc
 
-# from kafka_producer import PostsEventProducer
+from kafka_producer import PostsEventProducer
 from db import SessionLocal, engine
 from models import Base
 import crud
@@ -12,8 +12,8 @@ Base.metadata.create_all(bind=engine)
 
 
 class PostService(posts_pb2_grpc.PostServiceServicer):
-    # def __init__(self):
-    # self.producer = PostsEventProducer()
+    def __init__(self):
+        self.producer = PostsEventProducer()
 
     def CreatePost(self, request, context):
         with SessionLocal() as db:
@@ -48,11 +48,11 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
         with SessionLocal() as db:
             post = crud.get_post(db, request.id, request.creator_id)
             if post:
-                # self.producer.send_view_event(
-                #     request.creator_id,
-                #     "post",
-                #     request.id,
-                # )
+                self.producer.send_view_event(
+                    request.creator_id,
+                    "post",
+                    request.id,
+                )
                 return posts_pb2.PostResponse(success=True, message="Post found", post=self._post_to_response(post))
             else:
                 return posts_pb2.PostResponse(success=False, message="Post not found or access denied")
@@ -60,6 +60,14 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
     def ListPosts(self, request, context):
         with SessionLocal() as db:
             posts = crud.list_posts(db, request.page_number, request.page_size, request.creator_id, request.author_id)
+
+            for post in posts:
+                self.producer.send_view_event(
+                    request.creator_id,
+                    "post",
+                    post.id,
+                )
+
             response_posts = [self._post_to_response(post) for post in posts]
             return posts_pb2.ListPostsResponse(success=True, posts=response_posts)
 
@@ -70,6 +78,13 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
             if crud.get_like(db, request.post_id, request.creator_id):
                 return posts_pb2.LikePostResponse(success=False, message="Post already liked")
             crud.like_post(db, request.post_id, request.creator_id)
+
+            self.producer.send_like_event(
+                request.creator_id,
+                "post",
+                request.post_id,
+            )
+
             return posts_pb2.LikePostResponse(success=True, message="Post liked")
 
     def UnlikePost(self, request, context):
@@ -79,6 +94,13 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
             if not crud.get_like(db, request.post_id, request.creator_id):
                 return posts_pb2.LikePostResponse(success=False, message="Post not liked")
             crud.unlike_post(db, request.post_id, request.creator_id)
+
+            self.producer.send_unlike_event(
+                request.creator_id,
+                "post",
+                request.post_id,
+            )
+
             return posts_pb2.LikePostResponse(success=True, message="Post unliked")
 
     def LeaveComment(self, request, context):
@@ -86,6 +108,13 @@ class PostService(posts_pb2_grpc.PostServiceServicer):
             if not crud.get_post(db, request.post_id, request.creator_id):
                 return posts_pb2.LeaveCommentResponse(success=False, message="Post not found or access denied")
             comment = crud.leave_comment(db, request.post_id, request.creator_id, request.text)
+
+            self.producer.send_comment_event(
+                request.creator_id,
+                "post",
+                request.post_id,
+            )
+
             return posts_pb2.LeaveCommentResponse(
                 success=True, message="Comment left", comment=self._comment_to_response(comment)
             )

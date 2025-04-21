@@ -4,6 +4,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-COPY wait-for-it.sh /wait-for-it.sh
 
-CMD ["./wait-for-it.sh", "db:5432", "--", "python", "main.py"]
+COPY wait-for-it.sh /wait-for-it.sh
+COPY start.sh /start.sh
+
+RUN chmod +x ./wait-for-it.sh ./start.sh
+
+CMD ["./start.sh"]
