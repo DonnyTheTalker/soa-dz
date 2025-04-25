@@ -6,7 +6,7 @@ API_URL = "http://api:5000"
 
 def setup_module():
     import time
-    time.sleep(3)
+    time.sleep(5)
 
 
 def test_like_post():
@@ -325,5 +325,5 @@ def test_leave_comment():
     data = response.json()
     assert data['success'] is True
     assert len(data['comments']) == 2
-    assert data['comments'][0]['comment'] == 'Test comment'
-    assert data['comments'][1]['comment'] == 'Test comment 2'
+    assert data['comments'][0]['text'] == 'Test comment'
+    assert data['comments'][1]['text'] == 'Test comment 2'

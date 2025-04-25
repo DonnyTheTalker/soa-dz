@@ -83,7 +83,7 @@ def unlike_post(db: Session, post_id: int, creator_id: str):
     return False
 
 
-def leave_comment(db: Session, post_id: int, comment: str, creator_id: str):
+def leave_comment(db: Session, post_id: int, creator_id: str,  comment: str):
     comment = Comment(post_id=post_id, comment=comment, creator_id=creator_id)
     db.add(comment)
     db.commit()

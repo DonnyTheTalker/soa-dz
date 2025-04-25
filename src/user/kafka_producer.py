@@ -19,7 +19,7 @@ class UserEventProducer:
         event = {
             'event_id': str(uuid.uuid4()),
             'event_type': 'REGISTRATION',
-            'user_id': user_id,
+            'client_id': user_id,
             'timestamp': datetime.now().isoformat()
         }
         self.producer.send('user-registration', key=user_id, value=event)

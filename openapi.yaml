@@ -154,6 +154,84 @@ paths:
           description: Failed to list posts
         '401':
           description: Unauthorized
+  /like_post:
+    post:
+      summary: Like a post
+      parameters:
+        - name: post_id
+          in: query
+          description: ID of the post to like
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully liked post
+        '400':
+          description: Failed to like post
+        '401':
+          description: Unauthorized
+  /unlike_post:
+    post:
+      summary: Unlike a post
+      parameters:
+        - name: post_id
+          in: query
+          description: ID of the post to unlike
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully unliked post
+        '400':
+          description: Failed to unlike post
+        '401':
+          description: Unauthorized
+  /leave_comment:
+    post:
+      summary: Leave a comment on a post
+      parameters:
+        - name: post_id
+          in: query
+          description: ID of the post to leave a comment on
+          required: true
+          schema:
+            type: string
+        - name: comment
+          in: query
+          description: Comment to leave on the post
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully left comment on post
+        '400':
+          description: Failed to leave comment on post
+  /list_comments:
+    get:
+      summary: List all comments on a post
+      parameters:
+        - name: post_id
+          in: query
+          description: ID of the post to list comments for
+          required: true
+          schema:
+            type: string
+            schema:
+              $ref: '#/components/schemas/CommentData'
+      responses:
+        '200':
+          description: Successfully listed comments on post
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentData'
+        '400':
+          description: Failed to list comments on post
 components:
   schemas:
     RegistrationData:
@@ -236,3 +314,19 @@ components:
           type: boolean
           default: false
         
+    CommentData:
+      type: object
+      properties:
+        content:
+          type: string
+          required: true
+        author:
+          type: string
+          required: true
+        created_at:
+          type: string
+          format: date-time
+        required:
+          - content
+          - author
+          - created_at
