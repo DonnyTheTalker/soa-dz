@@ -6,15 +6,20 @@ from proto import auth_pb2, auth_pb2_grpc
 from db import SessionLocal, engine
 from models import Base
 from crud import create_user, authenticate_user, get_user, update_user_profile
+from kafka_producer import UserEventProducer
 
 Base.metadata.create_all(bind=engine)
 
 
 class AuthServicer(auth_pb2_grpc.AuthServiceServicer):
+    def __init__(self):
+        self.producer = UserEventProducer()
+
     def RegisterUser(self, request, context):
         with SessionLocal() as db:
             user = create_user(db, username=request.username, password=request.password, email=request.email)
             if user is not None:
+                self.producer.send_registration_event(user.username)
                 return auth_pb2.RegisterResponse(success=True, message="User created")
             return auth_pb2.RegisterResponse(success=False, message="User already exists")
 

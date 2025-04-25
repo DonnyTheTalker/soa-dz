@@ -3,12 +3,9 @@ import requests
 
 API_URL = "http://api:5000"
 
-
-@pytest.fixture(autouse=True)
-def test_setup():
+def setup_module():
     import time
-
-    time.sleep(3)
+    time.sleep(5)
 
 
 def test_register_user():

@@ -2,3 +2,4 @@ pytest
 requests
 grpcio
 grpcio-tools
+kafka-python

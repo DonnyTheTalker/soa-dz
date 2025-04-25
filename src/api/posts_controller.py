@@ -100,8 +100,7 @@ class PostsController:
             page_number = data.get('page_number', 0)
             page_size = data.get('page_size', 10)
             grpc_request = posts_pb2.ListPostsRequest(
-                creator_id=data['username'], page_number=page_number, page_size=page_size,
-                author_id=data['author']
+                creator_id=data['username'], page_number=page_number, page_size=page_size, author_id=data['author']
             )
             response = stub.ListPosts(grpc_request)
             return jsonify(
@@ -109,5 +108,73 @@ class PostsController:
                     "success": response.success,
                     "message": response.message,
                     "posts": [MessageToDict(post) for post in response.posts],
+                }
+            ), (200 if response.success else 404)
+
+    @staticmethod
+    def like_post():
+        data = request.get_json()
+
+        required_fields = ['id', 'username']
+        if not AuthController.check_required_fields(data, required_fields):
+            return jsonify(success=False, message="Missing fields"), 400
+
+        with PostsController.grpc_channel() as channel:
+            stub = posts_pb2_grpc.PostServiceStub(channel)
+            grpc_request = posts_pb2.LikePostRequest(post_id=data['id'], creator_id=data['username'])
+            response = stub.LikePost(grpc_request)
+            return jsonify({"success": response.success, "message": response.message}), 200 if response.success else 404
+
+    @staticmethod
+    def unlike_post():
+        data = request.get_json()
+
+        required_fields = ['id', 'username']
+        if not AuthController.check_required_fields(data, required_fields):
+            return jsonify(success=False, message="Missing fields"), 400
+
+        with PostsController.grpc_channel() as channel:
+            stub = posts_pb2_grpc.PostServiceStub(channel)
+            grpc_request = posts_pb2.LikePostRequest(post_id=data['id'], creator_id=data['username'])
+            response = stub.UnlikePost(grpc_request)
+            return jsonify({"success": response.success, "message": response.message}), 200 if response.success else 404
+
+    @staticmethod
+    def comment_post():
+        data = request.get_json()
+
+        required_fields = ['id', 'username', 'comment']
+        if not AuthController.check_required_fields(data, required_fields):
+            return jsonify(success=False, message="Missing fields"), 400
+
+        with PostsController.grpc_channel() as channel:
+            stub = posts_pb2_grpc.PostServiceStub(channel)
+            grpc_request = posts_pb2.LeaveCommentRequest(
+                post_id=data['id'], creator_id=data['username'], text=data['comment']
+            )
+            response = stub.LeaveComment(grpc_request)
+            return jsonify({"success": response.success, "message": response.message}), 200 if response.success else 404
+
+    @staticmethod
+    def list_comments():
+        data = request.get_json()
+
+        required_fields = ['id', 'username']
+        if not AuthController.check_required_fields(data, required_fields):
+            return jsonify(success=False, message="Missing fields"), 400
+
+        with PostsController.grpc_channel() as channel:
+            stub = posts_pb2_grpc.PostServiceStub(channel)
+            page_number = data.get('page_number', 0)
+            page_size = data.get('page_size', 10)
+            grpc_request = posts_pb2.ListCommentsRequest(
+                post_id=data['id'], creator_id=data['username'], page_number=page_number, page_size=page_size
+            )
+            response = stub.ListComments(grpc_request)
+            return jsonify(
+                {
+                    "success": response.success,
+                    "message": response.message,
+                    "comments": [MessageToDict(comment) for comment in response.comments],
                 }
             ), (200 if response.success else 404)
